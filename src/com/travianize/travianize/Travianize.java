@@ -1,14 +1,15 @@
 package com.travianize.travianize;
 
+import com.travianize.travianize.travian.Account;
 import com.travianize.travianize.utils.Logger;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.logging.Level;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Travianize {
 
@@ -30,6 +31,8 @@ public class Travianize {
 
         }
     }
+
+    private Account[] accounts;
 
     private AccountInfo[] loadAccountsInfo(String accountsInfoFileName) {
 
@@ -58,14 +61,24 @@ public class Travianize {
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
 
             String currectFileLine;
+            List<AccountInfo> accountsInfoList = new ArrayList<AccountInfo>();
 
             while ((currectFileLine = reader.readLine()) != null) {
 
-                System.out.println(currectFileLine);
+                //TODO: ':' in password
+                String[] accountParts = currectFileLine.split(":");
+
+                if(accountParts.length<3){
+                    continue;
+                }
+
+                AccountInfo accountInfo = new AccountInfo(accountParts[0], accountParts[1], accountParts[2]);
+
+                accountsInfoList.add(accountInfo);
 
             }
 
-            return new AccountInfo[0];
+            return accountsInfoList.toArray(new AccountInfo[0]);
 
         } catch (IOException ex) {
 
@@ -108,6 +121,14 @@ public class Travianize {
         for(AccountInfo accountInfo: accountsInfo){
 
             Logger.info(accountInfo.serverHostName+" "+accountInfo.login+" "+accountInfo.password);
+
+        }
+
+        accounts = new Account[accountsInfo.length];
+
+        for(int i=0;i<accountsInfo.length;i++){
+
+            accounts[i] = new Account(accountsInfo[i].serverHostName, accountsInfo[i].login, accountsInfo[i].password);
 
         }
 
