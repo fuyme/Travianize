@@ -1,12 +1,14 @@
 package com.travianize.travianize;
 
+import com.travianize.travianize.utils.Logger;
+
 public class Travianize {
 
     private static Travianize travianize;
 
     public Travianize(){
 
-        System.out.println("Travianize");
+        Logger.info("Travianize");
 
     }
 
