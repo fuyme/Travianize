@@ -7,8 +7,12 @@ build.xml
 *.war
 *.ear
 
-#NetBeans#
+# NetBeans #
 
 nbproject
 /build/
 /dist/
+
+# Bot file #
+
+accounts.conf
