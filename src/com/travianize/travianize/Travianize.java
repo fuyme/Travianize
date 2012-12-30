@@ -13,7 +13,8 @@ import java.util.List;
 
 public class Travianize {
 
-    private static final String VERSION = "0.0.1";
+    public static final String VERSION = "0.0.1";
+    public static final String APPLICATION_NAME = "Travianize";
     private static final String accountsInfoFileName = "accounts.conf";
     private static Travianize travianize;
 
@@ -97,7 +98,7 @@ public class Travianize {
 
     public Travianize() {
 
-        Logger.info("Travianize ver." + VERSION);
+        Logger.info(APPLICATION_NAME+" ver. " + VERSION);
 
         AccountInfo[] accountsInfo = loadAccountsInfo(accountsInfoFileName);
 
@@ -135,7 +136,13 @@ public class Travianize {
     }
 
     public void start() {
-        //...
+
+        while(true){
+            for(Account account: accounts){
+                account.update();
+            }
+        }
+
     }
 
     public static void main(String[] args) {

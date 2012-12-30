@@ -1,5 +1,6 @@
 package com.travianize.travianize.connection;
 
+import com.travianize.travianize.Travianize;
 import com.travianize.travianize.exception.LoadHttpPageException;
 import com.travianize.travianize.utils.Logger;
 import java.io.BufferedReader;
@@ -171,7 +172,7 @@ public class HttpWorker{
         String headers = "";
 
         headers += "Host: " + host + "\n";
-        headers += "User-Agent: TravianBot (Win16) TravianBot/20111016 TravianBot/0.0.1\n";
+        headers += "User-Agent: "+Travianize.APPLICATION_NAME+" (Win16) "+Travianize.APPLICATION_NAME+"/20111016 "+Travianize.APPLICATION_NAME+"/"+Travianize.VERSION+"\n";
         headers += "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8\n";
         headers += "Accept-Language: ru-ru,ru;q=0.8,en-us;q=0.5,en;q=0.3\n";
         headers += "Accept-Encoding: deflate\n";
