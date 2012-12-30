@@ -13,7 +13,7 @@ import java.util.List;
 
 public class Travianize {
 
-    public static final String VERSION = "0.0.1";
+    public static final String VERSION = "0.0.2";
     public static final String APPLICATION_NAME = "Travianize";
     private static final String accountsInfoFileName = "accounts.conf";
     private static Travianize travianize;
@@ -61,13 +61,13 @@ public class Travianize {
             inputStream = new DataInputStream(new FileInputStream("./" + accountsInfoFileName));
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
 
-            String currectFileLine;
+            String currentFileLine;
             List<AccountInfo> accountsInfoList = new ArrayList<AccountInfo>();
 
-            while ((currectFileLine = reader.readLine()) != null) {
+            while ((currentFileLine = reader.readLine()) != null) {
 
                 //TODO: ':' in password
-                String[] accountParts = currectFileLine.split(":");
+                String[] accountParts = currentFileLine.split(":");
 
                 if (accountParts.length < 3) {
                     continue;
