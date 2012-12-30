@@ -17,23 +17,29 @@ public class Account {
     ArrayList<Task> tasks = new ArrayList<Task>();
 
     public Account(String serverHostName, String login, String password) {
+
         try {
             connection = new TravianConnector(serverHostName);
-            try{
+
+            try {
+
                 connection.login(login, password);
 
-            }catch(LoadHttpPageException e){
+            } catch (LoadHttpPageException e) {
                 Logger.info("Can't load page");
             }
-            Logger.info("Create account '"+login+"', password: '"+password+"' for host '"+serverHostName+"'");
+
+            Logger.info("Create account '" + login + "', password: '" + password + "' for host '" + serverHostName + "'");
+
         } catch (UnknownHostException ex) {
-            Logger.info("Unknown Host '"+serverHostName+"'");
+            Logger.info("Unknown Host '" + serverHostName + "'");
         }
 
-        for(int i=1;i<19;i++){
+        //TODO: delete it
+        for (int i = 1; i < 19; i++) {
             UpgradingFieldTask task = new UpgradingFieldTask();
             task.idField = i;
-            task.time = (int)(System.currentTimeMillis()/1000) +(i*300);
+            task.time = (int) (System.currentTimeMillis() / 1000) + (i * 300);
             tasks.add(task);
         }
 
@@ -41,10 +47,11 @@ public class Account {
 
     }
 
-    public void update(){
+    public void update() {
 
-        if(tasks.size()>0 && tasks.get(0).time<(int)(System.currentTimeMillis()/1000)){
-            UpgradingFieldTask task = (UpgradingFieldTask)tasks.get(0);
+        if (tasks.size() > 0 && tasks.get(0).time < (int) (System.currentTimeMillis() / 1000)) {
+            //tODO: task isn't always upgrading field task
+            UpgradingFieldTask task = (UpgradingFieldTask) tasks.get(0);
             try {
                 connection.upgradingField(task.idField);
             } catch (LoadHttpPageException ex) {
@@ -54,5 +61,4 @@ public class Account {
         }
 
     }
-
 }

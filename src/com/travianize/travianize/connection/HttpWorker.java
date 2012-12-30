@@ -11,7 +11,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 
-public class HttpWorker{
+public class HttpWorker {
 
     protected class Cookie {
 
@@ -33,21 +33,17 @@ public class HttpWorker{
         private String html;
         private int code;
 
-
         public Header[] getHeaders() {
             return headers;
         }
-
 
         public Cookie[] getCookies() {
             return cookies;
         }
 
-
         public String getHtml() {
             return html;
         }
-
 
         public int getCode() {
             return code;
@@ -67,7 +63,6 @@ public class HttpWorker{
         }
 
         RequestData() {
-
         }
     }
 
@@ -83,7 +78,6 @@ public class HttpWorker{
 
         }
     }
-
     private String host;
     private int port;
     private HtmlRequestResult lastRequestResult;
@@ -165,14 +159,12 @@ public class HttpWorker{
 
     }
 
-
-
     private String getHeadsAsString(String messageBody) {
 
         String headers = "";
 
         headers += "Host: " + host + "\n";
-        headers += "User-Agent: "+Travianize.APPLICATION_NAME+" (Win16) "+Travianize.APPLICATION_NAME+"/20111016 "+Travianize.APPLICATION_NAME+"/"+Travianize.VERSION+"\n";
+        headers += "User-Agent: " + Travianize.APPLICATION_NAME + " (Win16) " + Travianize.APPLICATION_NAME + "/20111016 " + Travianize.APPLICATION_NAME + "/" + Travianize.VERSION + "\n";
         headers += "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8\n";
         headers += "Accept-Language: ru-ru,ru;q=0.8,en-us;q=0.5,en;q=0.3\n";
         headers += "Accept-Encoding: deflate\n";
@@ -259,7 +251,6 @@ public class HttpWorker{
 
     }
 
-
     protected HtmlRequestResult getLastRequestResult() {
         return lastRequestResult;
     }
@@ -276,6 +267,4 @@ public class HttpWorker{
         Logger.info("Created connection " + this.host + ":" + this.port);
 
     }
-
-
 }

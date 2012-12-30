@@ -32,12 +32,12 @@ public class Travianize {
 
         }
     }
-
     private Account[] accounts;
 
     private AccountInfo[] loadAccountsInfo(String accountsInfoFileName) {
 
         File accountsInfoFile = new File("./" + accountsInfoFileName);
+
         if (!accountsInfoFile.exists()) {
 
             Logger.info("Can't find '" + accountsInfoFileName + "' file.");
@@ -69,7 +69,7 @@ public class Travianize {
                 //TODO: ':' in password
                 String[] accountParts = currectFileLine.split(":");
 
-                if(accountParts.length<3){
+                if (accountParts.length < 3) {
                     continue;
                 }
 
@@ -90,7 +90,8 @@ public class Travianize {
 
             try {
                 inputStream.close();
-            } catch (IOException ex) {}
+            } catch (IOException ex) {
+            }
 
         }
 
@@ -98,11 +99,11 @@ public class Travianize {
 
     public Travianize() {
 
-        Logger.info(APPLICATION_NAME+" ver. " + VERSION);
+        Logger.info(APPLICATION_NAME + " ver. " + VERSION);
 
         AccountInfo[] accountsInfo = loadAccountsInfo(accountsInfoFileName);
 
-        if(accountsInfo == null){
+        if (accountsInfo == null) {
 
             Logger.info("Fatal error in loading accounts...");
             //TODO: Add exception. Programm must exit
@@ -110,7 +111,7 @@ public class Travianize {
 
         }
 
-        if(accountsInfo.length == 0){
+        if (accountsInfo.length == 0) {
 
             Logger.info("Can't find any accounts. Use 'host:login:password' to add new accounts");
             //TODO: Add exception. Programm must exit
@@ -119,16 +120,16 @@ public class Travianize {
         }
 
         Logger.info("Loaded accounts:");
-        for(AccountInfo accountInfo: accountsInfo){
+        for (AccountInfo accountInfo : accountsInfo) {
 
-            Logger.info(accountInfo.serverHostName+" "+accountInfo.login+" "+accountInfo.password);
+            Logger.info(accountInfo.serverHostName + " " + accountInfo.login + " " + accountInfo.password);
 
         }
 
         accounts = new Account[accountsInfo.length];
 
-        for(int i=0;i<accountsInfo.length;i++){
-
+        for (int i = 0; i < accountsInfo.length; i++) {
+            //TODO: some error if data is wrong
             accounts[i] = new Account(accountsInfo[i].serverHostName, accountsInfo[i].login, accountsInfo[i].password);
 
         }
@@ -137,8 +138,8 @@ public class Travianize {
 
     public void start() {
 
-        while(true){
-            for(Account account: accounts){
+        while (true) {
+            for (Account account : accounts) {
                 account.update();
             }
         }

@@ -12,7 +12,7 @@ public class UpgradingFieldPageParser {
         List<List<String>> linkRegx = new ArrayList<List<String>>();
 
         RegexpUtils.preg_match_all("/class=\"build\" onclick=\"window\\.location\\.href = '(.+?)'; return false;\">/", html, linkRegx);
-
+        //TODO: add check: is elements exist
         String link = linkRegx.get(0).get(1);
 
         return link.replaceAll("&amp;", "&");
@@ -20,15 +20,13 @@ public class UpgradingFieldPageParser {
 
     }
 
+    public static UpgradingFieldPage parse(String html) {
 
-    public static UpgradingFieldPage parse(String html){
-
-        UpgradingFieldPage page =  new UpgradingFieldPage();
+        UpgradingFieldPage page = new UpgradingFieldPage();
 
         page.upgradingLink = getUpgradingLink(html);
 
         return page;
 
     }
-
 }
