@@ -85,7 +85,7 @@ public class RegexpUtils {
         }
         //  m.find();
         while (m.find()) {
-            ArrayList row = new ArrayList();
+            ArrayList<String> row = new ArrayList<String>();
             for (int i = 0; i <= gcount; i++) {
                 if (rez != null) {
                     row.add(m.group(i));

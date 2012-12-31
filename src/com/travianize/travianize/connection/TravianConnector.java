@@ -39,6 +39,7 @@ public class TravianConnector extends Connection {
 
         post("/dorf1.php", values);
 
+        Logger.info("Success logined as "+login);
 
     }
 

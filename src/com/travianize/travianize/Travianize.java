@@ -138,11 +138,17 @@ public class Travianize {
 
     public void start() {
 
-        while (true) {
+        int updatedAccount = 0;
+
+        do{
+            updatedAccount = 0;
             for (Account account : accounts) {
-                account.update();
+                if(!account.isComplite()){
+                    account.update();
+                    updatedAccount++;
+                }
             }
-        }
+        }while(updatedAccount != 0);
 
     }
 
