@@ -1,6 +1,7 @@
 package com.travianize.travianize.connection;
 
 import com.travianize.travianize.exception.LoadHttpPageException;
+import com.travianize.travianize.exception.UpgradingAvailableException;
 import com.travianize.travianize.parsers.UpgradingFieldPageParser;
 import com.travianize.travianize.parsers.pages.UpgradingFieldPage;
 import com.travianize.travianize.utils.Logger;
@@ -43,7 +44,7 @@ public class TravianConnector extends Connection {
 
     }
 
-    public void upgradingField(int id) throws LoadHttpPageException {
+    public void upgradingField(int id) throws LoadHttpPageException, UpgradingAvailableException {
 
         RequestData[] requestDatas = new RequestData[1];
         requestDatas[0] = new RequestData("id", id + "");
@@ -53,7 +54,9 @@ public class TravianConnector extends Connection {
         String html = getLastRequestResult().getHtml();
 
         UpgradingFieldPage page = UpgradingFieldPageParser.parse(html);
-
+        if(page.upgradingLink==null){
+            throw new UpgradingAvailableException();
+        }
         get("/" + page.upgradingLink, null);
 
         Logger.info("Start upgrading field " + id);

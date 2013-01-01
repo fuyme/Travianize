@@ -3,6 +3,7 @@ package com.travianize.travianize.travian;
 import com.travianize.travianize.Travianize;
 import com.travianize.travianize.connection.TravianConnector;
 import com.travianize.travianize.exception.LoadHttpPageException;
+import com.travianize.travianize.exception.UpgradingAvailableException;
 import com.travianize.travianize.travian.tasks.Task;
 import com.travianize.travianize.travian.tasks.UpgradingFieldTask;
 import com.travianize.travianize.utils.Logger;
@@ -63,16 +64,21 @@ public class Account {
         if(tasks.isEmpty()){
             complite = true;
         }
-/*        if (tasks.size() > 0 && tasks.get(0).time < (int) (System.currentTimeMillis() / 1000)) {
-            //tODO: task isn't always upgrading field task
+
+        if (tasks.size() > 0 && tasks.get(0).time < (int) (System.currentTimeMillis() / 1000)) {
+            //TODO: task isn't always upgrading field task
             UpgradingFieldTask task = (UpgradingFieldTask) tasks.get(0);
             try {
                 connection.upgradingField(task.idField);
             } catch (LoadHttpPageException ex) {
                 Logger.info("Can't load page");
+                return;
+            } catch (UpgradingAvailableException ex) {
+                task.time = (int) (System.currentTimeMillis() / 1000) + 600;
+                return;
             }
             tasks.remove(0);
-        }*/
+        }
 
     }
 
