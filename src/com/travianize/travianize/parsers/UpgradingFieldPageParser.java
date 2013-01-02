@@ -1,6 +1,5 @@
 package com.travianize.travianize.parsers;
 
-import com.travianize.travianize.exception.UpgradingAvailableException;
 import com.travianize.travianize.parsers.pages.UpgradingFieldPage;
 import com.travianize.travianize.utils.RegexpUtils;
 import java.util.ArrayList;

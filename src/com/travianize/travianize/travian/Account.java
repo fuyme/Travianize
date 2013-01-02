@@ -1,6 +1,5 @@
 package com.travianize.travianize.travian;
 
-import com.travianize.travianize.Travianize;
 import com.travianize.travianize.connection.TravianConnector;
 import com.travianize.travianize.exception.LoadHttpPageException;
 import com.travianize.travianize.exception.UpgradingAvailableException;
@@ -14,17 +13,14 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
-import java.util.logging.Level;
+import java.util.LinkedList;
+import java.util.Queue;
 
 public class Account {
 
     TravianConnector connection;
     //TODO: change to queue
-    ArrayList<Task> tasks = new ArrayList<Task>();
+    Queue<Task> tasks = new LinkedList<Task>();
     private boolean complite = false;
 
     public Account(String serverHostName, String login, String password) {
@@ -65,9 +61,9 @@ public class Account {
             complite = true;
         }
 
-        if (tasks.size() > 0 && tasks.get(0).time < (int) (System.currentTimeMillis() / 1000)) {
+        if (!tasks.isEmpty() && tasks.peek().time < (int) (System.currentTimeMillis() / 1000)) {
             //TODO: task isn't always upgrading field task
-            UpgradingFieldTask task = (UpgradingFieldTask) tasks.get(0);
+            UpgradingFieldTask task = (UpgradingFieldTask) tasks.peek();
             try {
                 connection.upgradingField(task.idField);
             } catch (LoadHttpPageException ex) {
@@ -77,12 +73,12 @@ public class Account {
                 task.time = (int) (System.currentTimeMillis() / 1000) + 600;
                 return;
             }
-            tasks.remove(0);
+            tasks.poll();
         }
 
     }
 
-    private ArrayList<Task> loadTaskFromFile(String filename) {
+    private Queue<Task> loadTaskFromFile(String filename) {
 
         File accountsInfoFile = new File("./" + filename);
 
@@ -98,7 +94,7 @@ public class Account {
                 Logger.info("Can't create file.");
             }
 
-            return new ArrayList<Task>();
+            return new LinkedList<Task>();
 
         }
 
@@ -110,7 +106,7 @@ public class Account {
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
 
             String currentFileLine;
-            ArrayList<Task> tasksList = new ArrayList<Task>();
+            Queue<Task> tasksList = new LinkedList<Task>();
 
             while ((currentFileLine = reader.readLine()) != null) {
 
@@ -126,7 +122,7 @@ public class Account {
         } catch (IOException ex) {
 
             Logger.info("Can't read '" + filename + "'. Check your permission.");
-            return new ArrayList<Task>();
+            return new LinkedList<Task>();
 
         } finally {
 
