@@ -21,6 +21,7 @@ public class Connection extends HttpWorker {
                 dataString += requestData.name + "=" + requestData.value + "&";
             }
             dataString = dataString.substring(0, dataString.length() - 1);
+            
         }
 
         makeConnect("GET", path + dataString, "");

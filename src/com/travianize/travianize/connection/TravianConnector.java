@@ -7,7 +7,7 @@ import com.travianize.travianize.parsers.pages.UpgradingFieldPage;
 import com.travianize.travianize.utils.Logger;
 import java.net.UnknownHostException;
 
-public class TravianConnector extends Connection {
+public class TravianConnector extends TravianConnection{
 
     public TravianConnector(String host) throws UnknownHostException {
 
@@ -17,7 +17,7 @@ public class TravianConnector extends Connection {
 
     public void login(String login, String password) throws LoadHttpPageException {
 
-        get("/login.php", null);
+        getLogin(null);
 
         RequestData[] values = new RequestData[5];
 
@@ -38,7 +38,7 @@ public class TravianConnector extends Connection {
         values[4].name = "s1";
         values[4].value = "Login";
 
-        post("/dorf1.php", values);
+        postDorf1(values);
 
         Logger.info("Success logined as "+login);
 
@@ -49,7 +49,7 @@ public class TravianConnector extends Connection {
         RequestData[] requestDatas = new RequestData[1];
         requestDatas[0] = new RequestData("id", id + "");
 
-        get("/build.php", requestDatas);
+        getBuild(requestDatas);
 
         String html = getLastRequestResult().getHtml();
 
@@ -57,8 +57,20 @@ public class TravianConnector extends Connection {
         if(page.upgradingLink==null){
             throw new UpgradingAvailableException();
         }
-        get("/" + page.upgradingLink, null);
 
+        String[] getData = page.upgradingLink.split("\\?");
+        String[] datas = getData[1].split("&");
+
+        RequestData[] buildDatas = new RequestData[datas.length];
+        for(int i=0;i<datas.length;i++){
+
+            String[] buildStringDatas = datas[i].split("=");
+            buildDatas[i] = new RequestData(buildStringDatas[0], buildStringDatas[1]);
+
+        }
+
+        getDorf1(buildDatas);
+        
         Logger.info("Start upgrading field " + id);
 
     }
