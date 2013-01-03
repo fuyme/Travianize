@@ -4,5 +4,6 @@ public class Dorf1Page {
 
     public int[] resources;
     public int[] productions;
+    public int[] buildingProductions;
 
 }

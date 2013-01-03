@@ -3,6 +3,7 @@ package com.travianize.travianize.travian;
 import com.travianize.travianize.connection.TravianConnector;
 import com.travianize.travianize.exception.LoadHttpPageException;
 import com.travianize.travianize.exception.UpgradingAvailableException;
+import com.travianize.travianize.parsers.pages.Dorf1Page;
 import com.travianize.travianize.travian.tasks.Task;
 import com.travianize.travianize.travian.tasks.UpgradingFieldTask;
 import com.travianize.travianize.utils.Logger;
@@ -23,10 +24,14 @@ public class Account {
     Queue<Task> tasks = new LinkedList<Task>();
     private boolean complite = false;
 
+    private int[] resources;
+    private int[] productions;
+    private int[] buildingProductions;
+
     public Account(String serverHostName, String login, String password) {
 
         try {
-            connection = new TravianConnector(serverHostName);
+            connection = new TravianConnector(serverHostName, this);
 
             try {
                 Logger.info("Try login...");
@@ -137,4 +142,33 @@ public class Account {
     public boolean isComplite() {
         return complite;
     }
+
+    public void updateFromDorf1Page(Dorf1Page page){
+
+        if(page.resources!=null){
+            this.resources = page.resources;
+        }
+
+        if(page.productions!=null){
+            this.productions = page.productions;
+        }
+
+        if(page.buildingProductions!=null){
+            this.buildingProductions = page.buildingProductions;
+        }
+
+        for(int i=0;i<resources.length;i++){
+            System.out.println(resources[i]);
+        }
+
+        for(int i=0;i<productions.length;i++){
+            System.out.println(productions[i]);
+        }
+
+        for(int i=0;i<buildingProductions.length;i++){
+            System.out.println(buildingProductions[i]);
+        }
+
+    }
+
 }

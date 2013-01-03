@@ -68,12 +68,39 @@ public class Dorf1PageParser {
 
     }
 
+    private static int[] getBuildingProductionParse(String html) {
+
+        int[] buildingProduction;
+
+        List<List<String>> buildingProductionDivRegx = new ArrayList<List<String>>();
+        RegexpUtils.preg_match_all("/<div class=\"boxes buildingList\">(.+?)<\\/table>/", html, buildingProductionDivRegx);
+
+        if (buildingProductionDivRegx.size() < 1 || buildingProductionDivRegx.get(0).size() < 1) {
+            return new int[0];
+        }
+
+        String buildingProductionDiv = buildingProductionDivRegx.get(0).get(0);
+        List<List<String>> buildingProductionRegx = new ArrayList<List<String>>();
+
+        RegexpUtils.preg_match_all("/<span id=\"timer[0-9]\">(.+?)<\\/span>/", buildingProductionDiv, buildingProductionRegx);
+        buildingProduction = new int[buildingProductionRegx.size()];
+        for (int i = 0; i < buildingProductionRegx.size(); i++) {
+            String[] stringRemainingTimes = buildingProductionRegx.get(i).get(1).split(":");
+            int remainingTime = Integer.parseInt(stringRemainingTimes[0]) * 3600 + Integer.parseInt(stringRemainingTimes[1]) * 60 + Integer.parseInt(stringRemainingTimes[2]);
+            buildingProduction[i] = remainingTime;
+        }
+
+        return buildingProduction;
+
+    }
+
     public static Dorf1Page parse(String html) {
 
         Dorf1Page page = new Dorf1Page();
 
         page.productions = getProductions(html);
         page.resources = getResources(html);
+        page.buildingProductions = getBuildingProductionParse(html);
 
         return page;
 

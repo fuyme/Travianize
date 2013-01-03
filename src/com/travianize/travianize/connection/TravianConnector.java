@@ -4,14 +4,15 @@ import com.travianize.travianize.exception.LoadHttpPageException;
 import com.travianize.travianize.exception.UpgradingAvailableException;
 import com.travianize.travianize.parsers.UpgradingFieldPageParser;
 import com.travianize.travianize.parsers.pages.UpgradingFieldPage;
+import com.travianize.travianize.travian.Account;
 import com.travianize.travianize.utils.Logger;
 import java.net.UnknownHostException;
 
 public class TravianConnector extends TravianConnection{
 
-    public TravianConnector(String host) throws UnknownHostException {
+    public TravianConnector(String host, Account account) throws UnknownHostException {
 
-        super(host);
+        super(host, account);
 
     }
 
@@ -70,7 +71,7 @@ public class TravianConnector extends TravianConnection{
         }
 
         getDorf1(buildDatas);
-        
+
         Logger.info("Start upgrading field " + id);
 
     }

@@ -1,6 +1,7 @@
 package com.travianize.travianize.connection;
 
 import com.travianize.travianize.exception.LoadHttpPageException;
+import com.travianize.travianize.travian.Account;
 import java.net.UnknownHostException;
 
 public class Connection extends HttpWorker {
@@ -21,7 +22,7 @@ public class Connection extends HttpWorker {
                 dataString += requestData.name + "=" + requestData.value + "&";
             }
             dataString = dataString.substring(0, dataString.length() - 1);
-            
+
         }
 
         makeConnect("GET", path + dataString, "");
