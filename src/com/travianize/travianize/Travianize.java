@@ -13,7 +13,7 @@ import java.util.List;
 
 public class Travianize {
 
-    public static final String VERSION = "0.0.2";
+    public static final String VERSION = "0.0.3";
     public static final String APPLICATION_NAME = "Travianize";
     private static final String accountsInfoFileName = "accounts.conf";
     private static Travianize travianize;

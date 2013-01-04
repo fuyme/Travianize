@@ -1,6 +1,7 @@
 package com.travianize.travianize.parsers;
 
 import com.travianize.travianize.parsers.pages.UpgradingFieldPage;
+import com.travianize.travianize.utils.Logger;
 import com.travianize.travianize.utils.RegexpUtils;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,11 +25,39 @@ public class UpgradingFieldPageParser {
 
     }
 
+    private static int[] getRequiredResourses(String html) {
+        List<List<String>> resoursesDivRegx = new ArrayList<List<String>>();
+
+        RegexpUtils.preg_match_all("/<div class=\"showCosts\">(.+?)<\\/div>/", html, resoursesDivRegx);
+        //TODO: add if
+        String resoursesDiv = resoursesDivRegx.get(0).get(1);
+
+        List<List<String>> resoursesRegx = new ArrayList<List<String>>();
+        RegexpUtils.preg_match_all("/<img class=\"r[0-9]{1}\" src=\"img\\/x\\.gif\" alt=\"[A-Za-z]{1,}\" \\/>(.+?)<\\/span>/", resoursesDiv, resoursesRegx);
+
+        if(resoursesRegx.size()!=4){
+            Logger.info("Find "+resoursesRegx.size()+" types. Need 4");
+            return null;
+        }
+
+        int[] resourses = new int[4];
+
+        for (int i = 0; i < 4; i++) {
+            //TODO: add try-cathce
+            resourses[i] = Integer.parseInt(resoursesRegx.get(i).get(1));
+        }
+
+        return resourses;
+
+    }
+
+
     public static UpgradingFieldPage parse(String html){
 
         UpgradingFieldPage page = new UpgradingFieldPage();
 
         page.upgradingLink = getUpgradingLink(html);
+        page.requiredResourses = getRequiredResourses(html);
 
         return page;
 

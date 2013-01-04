@@ -47,6 +47,8 @@ public class TravianConnector extends TravianConnection{
 
     public void upgradingField(int id) throws LoadHttpPageException, UpgradingAvailableException {
 
+        getDorf1(null);
+
         RequestData[] requestDatas = new RequestData[1];
         requestDatas[0] = new RequestData("id", id + "");
 
@@ -56,7 +58,7 @@ public class TravianConnector extends TravianConnection{
 
         UpgradingFieldPage page = UpgradingFieldPageParser.parse(html);
         if(page.upgradingLink==null){
-            throw new UpgradingAvailableException();
+            throw new UpgradingAvailableException(page);
         }
 
         String[] getData = page.upgradingLink.split("\\?");

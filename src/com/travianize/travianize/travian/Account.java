@@ -4,6 +4,7 @@ import com.travianize.travianize.connection.TravianConnector;
 import com.travianize.travianize.exception.LoadHttpPageException;
 import com.travianize.travianize.exception.UpgradingAvailableException;
 import com.travianize.travianize.parsers.pages.Dorf1Page;
+import com.travianize.travianize.parsers.pages.UpgradingFieldPage;
 import com.travianize.travianize.travian.tasks.Task;
 import com.travianize.travianize.travian.tasks.UpgradingFieldTask;
 import com.travianize.travianize.utils.Logger;
@@ -23,7 +24,7 @@ public class Account {
     //TODO: change to queue
     Queue<Task> tasks = new LinkedList<Task>();
     private boolean complite = false;
-
+    private int resourcesLastUpdate, productionsLastUpdate, buildingProductionsLastUpdate;
     private int[] resources;
     private int[] productions;
     private int[] buildingProductions;
@@ -36,8 +37,8 @@ public class Account {
             try {
                 Logger.info("Try login...");
                 connection.login(login, password);
-                Logger.info("Load tasks from file 'task_"+serverHostName+"_"+login+".txt'");
-                tasks = loadTaskFromFile("task_"+serverHostName+"_"+login+".txt");
+                Logger.info("Load tasks from file 'task_" + serverHostName + "_" + login + ".txt'");
+                tasks = loadTaskFromFile("task_" + serverHostName + "_" + login + ".txt");
 
             } catch (LoadHttpPageException e) {
                 //TODO: add exception
@@ -52,9 +53,9 @@ public class Account {
         }
 
         Logger.info("Loaded tasks:");
-        for(Task task: tasks){
+        for (Task task : tasks) {
 
-            System.out.println(((UpgradingFieldTask)task).idField);
+            System.out.println(((UpgradingFieldTask) task).idField);
 
         }
 
@@ -62,7 +63,7 @@ public class Account {
 
     public void update() {
 
-        if(tasks.isEmpty()){
+        if (tasks.isEmpty()) {
             complite = true;
         }
 
@@ -75,7 +76,28 @@ public class Account {
                 Logger.info("Can't load page");
                 return;
             } catch (UpgradingAvailableException ex) {
-                task.time = (int) (System.currentTimeMillis() / 1000) + 600;
+                if (buildingProductions != null && buildingProductions.length != 0) {
+                    int time = buildingProductions[buildingProductions.length - 1];
+                    task.time = buildingProductionsLastUpdate + time + 10;
+                    Logger.info("Already upgrading filed. Wait "+time+" sec");
+                } else {
+
+                    UpgradingFieldPage page = ex.getUpgradingFieldPage();
+                    if (page.requiredResourses != null && resources != null && productions != null) {
+                        int time = 0;
+
+                        for (int i = 0; i < 4; i++) {
+                            int resorceTime = (int)Math.floor((page.requiredResourses[i]-resources[i])/(double)productions[i]*3600)+resourcesLastUpdate;
+                               
+                            if(time <  resorceTime){time = resorceTime;}
+                        }
+                        Logger.info("Wait resource to "+time+" ");
+                        task.time = time + 60;
+                    }else{
+                        task.time = task.time + 300;
+                    }
+                }
+
                 return;
             }
             tasks.poll();
@@ -133,7 +155,8 @@ public class Account {
 
             try {
                 inputStream.close();
-            } catch (IOException ex) {}
+            } catch (IOException ex) {
+            }
 
         }
 
@@ -143,32 +166,21 @@ public class Account {
         return complite;
     }
 
-    public void updateFromDorf1Page(Dorf1Page page){
+    public void updateFromDorf1Page(Dorf1Page page) {
 
-        if(page.resources!=null){
+        if (page.resources != null) {
             this.resources = page.resources;
+            this.resourcesLastUpdate = (int) (System.currentTimeMillis() / 1000);
         }
 
-        if(page.productions!=null){
+        if (page.productions != null) {
             this.productions = page.productions;
+            this.productionsLastUpdate = (int) (System.currentTimeMillis() / 1000);
         }
 
-        if(page.buildingProductions!=null){
+        if (page.buildingProductions != null) {
             this.buildingProductions = page.buildingProductions;
+            this.buildingProductionsLastUpdate = (int) (System.currentTimeMillis() / 1000);
         }
-
-        for(int i=0;i<resources.length;i++){
-            System.out.println(resources[i]);
-        }
-
-        for(int i=0;i<productions.length;i++){
-            System.out.println(productions[i]);
-        }
-
-        for(int i=0;i<buildingProductions.length;i++){
-            System.out.println(buildingProductions[i]);
-        }
-
     }
-
 }

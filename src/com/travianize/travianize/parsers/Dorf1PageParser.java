@@ -88,6 +88,7 @@ public class Dorf1PageParser {
             String[] stringRemainingTimes = buildingProductionRegx.get(i).get(1).split(":");
             int remainingTime = Integer.parseInt(stringRemainingTimes[0]) * 3600 + Integer.parseInt(stringRemainingTimes[1]) * 60 + Integer.parseInt(stringRemainingTimes[2]);
             buildingProduction[i] = remainingTime;
+            //TODO: add try-cathce to parseInt
         }
 
         return buildingProduction;
