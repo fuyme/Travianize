@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 public class Travianize {
 
@@ -140,15 +141,20 @@ public class Travianize {
 
         int updatedAccount = 0;
 
-        do{
+        do {
             updatedAccount = 0;
             for (Account account : accounts) {
-                if(!account.isComplite()){
+                if (!account.isComplite()) {
                     account.update();
                     updatedAccount++;
                 }
             }
-        }while(updatedAccount != 0);
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException ex) {
+            }
+        } while (updatedAccount != 0);
+
 
     }
 

@@ -45,12 +45,12 @@ public class TravianConnector extends TravianConnection{
 
     }
 
-    public void upgradingField(int id) throws LoadHttpPageException, UpgradingAvailableException {
+    private void upgrading(int idField) throws LoadHttpPageException, UpgradingAvailableException {
 
         getDorf1(null);
 
         RequestData[] requestDatas = new RequestData[1];
-        requestDatas[0] = new RequestData("id", id + "");
+        requestDatas[0] = new RequestData("id", idField + "");
 
         getBuild(requestDatas);
 
@@ -74,7 +74,15 @@ public class TravianConnector extends TravianConnection{
 
         getDorf1(buildDatas);
 
-        Logger.info("Start upgrading field " + id);
+        Logger.info("Start upgrading field " + idField);
 
+    }
+
+    public void upgradingField(int idField) throws LoadHttpPageException, UpgradingAvailableException {
+        upgrading(idField);
+    }
+
+    public void upgradingBuilding(int idField)  throws LoadHttpPageException, UpgradingAvailableException {
+        upgrading(idField);
     }
 }

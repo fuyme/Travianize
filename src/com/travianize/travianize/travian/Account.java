@@ -6,6 +6,7 @@ import com.travianize.travianize.exception.UpgradingAvailableException;
 import com.travianize.travianize.parsers.pages.Dorf1Page;
 import com.travianize.travianize.parsers.pages.UpgradingFieldPage;
 import com.travianize.travianize.travian.tasks.Task;
+import com.travianize.travianize.travian.tasks.UpgradingBuildingTask;
 import com.travianize.travianize.travian.tasks.UpgradingFieldTask;
 import com.travianize.travianize.utils.Logger;
 import java.io.BufferedReader;
@@ -52,13 +53,6 @@ public class Account {
             Logger.info("Unknown Host '" + serverHostName + "'");
         }
 
-        Logger.info("Loaded tasks:");
-        for (Task task : tasks) {
-
-            System.out.println(((UpgradingFieldTask) task).idField);
-
-        }
-
     }
 
     public void update() {
@@ -69,9 +63,14 @@ public class Account {
 
         if (!tasks.isEmpty() && tasks.peek().time < (int) (System.currentTimeMillis() / 1000)) {
             //TODO: task isn't always upgrading field task
-            UpgradingFieldTask task = (UpgradingFieldTask) tasks.peek();
+            Task task = tasks.peek();
             try {
-                connection.upgradingField(task.idField);
+
+                if (task instanceof UpgradingFieldTask) {
+                    connection.upgradingField(((UpgradingFieldTask) task).idField);
+                } else if (task instanceof UpgradingBuildingTask) {
+                    connection.upgradingBuilding(((UpgradingBuildingTask) task).idField);
+                }
             } catch (LoadHttpPageException ex) {
                 Logger.info("Can't load page");
                 return;
@@ -79,7 +78,7 @@ public class Account {
                 if (buildingProductions != null && buildingProductions.length != 0) {
                     int time = buildingProductions[buildingProductions.length - 1];
                     task.time = buildingProductionsLastUpdate + time + 10;
-                    Logger.info("Already upgrading filed. Wait "+time+" sec");
+                    Logger.info("Already upgrading filed. Wait " + time + " sec");
                 } else {
 
                     UpgradingFieldPage page = ex.getUpgradingFieldPage();
@@ -87,13 +86,15 @@ public class Account {
                         int time = 0;
 
                         for (int i = 0; i < 4; i++) {
-                            int resorceTime = (int)Math.floor((page.requiredResourses[i]-resources[i])/(double)productions[i]*3600)+resourcesLastUpdate;
-                               
-                            if(time <  resorceTime){time = resorceTime;}
+                            int resorceTime = (int) Math.floor((page.requiredResourses[i] - resources[i]) / (double) productions[i] * 3600) + resourcesLastUpdate;
+
+                            if (time < resorceTime) {
+                                time = resorceTime;
+                            }
                         }
-                        Logger.info("Wait resource to "+time+" ");
+                        Logger.info("Wait resource to " + time + " ");
                         task.time = time + 60;
-                    }else{
+                    } else {
                         task.time = task.time + 300;
                     }
                 }
@@ -136,11 +137,18 @@ public class Account {
             Queue<Task> tasksList = new LinkedList<Task>();
 
             while ((currentFileLine = reader.readLine()) != null) {
-
-                UpgradingFieldTask task = new UpgradingFieldTask();
-                task.idField = Integer.parseInt(currentFileLine);
-                task.time = 0;
-                tasksList.add(task);
+                String[] stringTask = currentFileLine.split(":");
+                if (stringTask[0].equals("f")) {
+                    UpgradingFieldTask task = new UpgradingFieldTask();
+                    task.idField = Integer.parseInt(stringTask[1]);
+                    task.time = 0;
+                    tasksList.add(task);
+                } else {
+                    UpgradingBuildingTask task = new UpgradingBuildingTask();
+                    task.idField = Integer.parseInt(stringTask[1]);
+                    task.time = 0;
+                    tasksList.add(task);
+                }
 
             }
 
