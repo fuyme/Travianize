@@ -25,12 +25,19 @@ public class Account {
     //TODO: change to queue
     Queue<Task> tasks = new LinkedList<Task>();
     private boolean complite = false;
+
+    private String login;
+    private String password;
+
     private int resourcesLastUpdate, productionsLastUpdate, buildingProductionsLastUpdate;
     private int[] resources;
     private int[] productions;
     private int[] buildingProductions;
 
     public Account(String serverHostName, String login, String password) {
+
+        this.login = login;
+        this.password = password;
 
         try {
             connection = new TravianConnector(serverHostName, this);
@@ -190,5 +197,19 @@ public class Account {
             this.buildingProductions = page.buildingProductions;
             this.buildingProductionsLastUpdate = (int) (System.currentTimeMillis() / 1000);
         }
+    }
+
+    /**
+     * @return the login
+     */
+    public String getLogin() {
+        return login;
+    }
+
+    /**
+     * @return the password
+     */
+    public String getPassword() {
+        return password;
     }
 }

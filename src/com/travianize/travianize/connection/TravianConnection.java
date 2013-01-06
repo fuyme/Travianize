@@ -8,7 +8,7 @@ import java.net.UnknownHostException;
 
 public class TravianConnection extends Connection {
 
-    private Account account;
+    protected Account account;
 
     public TravianConnection(String host, Account account) throws UnknownHostException {
 

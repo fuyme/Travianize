@@ -49,6 +49,13 @@ public class TravianConnector extends TravianConnection{
 
         getDorf1(null);
 
+        if(!check_login(getLastRequestResult().getHtml())){
+
+            login(account.getLogin(), account.getPassword());
+            getDorf1(null);
+
+        }
+
         RequestData[] requestDatas = new RequestData[1];
         requestDatas[0] = new RequestData("id", idField + "");
 
@@ -84,5 +91,11 @@ public class TravianConnector extends TravianConnection{
 
     public void upgradingBuilding(int idField)  throws LoadHttpPageException, UpgradingAvailableException {
         upgrading(idField);
+    }
+
+    private boolean check_login(String html) {
+
+        return html.indexOf("<button type=\"submit\" value=\"Login\"") == -1;
+
     }
 }
