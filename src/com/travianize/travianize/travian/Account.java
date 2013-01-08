@@ -2,6 +2,7 @@ package com.travianize.travianize.travian;
 
 import com.travianize.travianize.connection.TravianConnector;
 import com.travianize.travianize.exception.LoadHttpPageException;
+import com.travianize.travianize.exception.LoginException;
 import com.travianize.travianize.exception.UpgradingAvailableException;
 import com.travianize.travianize.parsers.pages.Dorf1Page;
 import com.travianize.travianize.parsers.pages.UpgradingFieldPage;
@@ -22,7 +23,7 @@ import java.util.Queue;
 public class Account {
 
     TravianConnector connection;
-    //TODO: change to queue
+
     Queue<Task> tasks = new LinkedList<Task>();
     private boolean complite = false;
 
@@ -34,7 +35,7 @@ public class Account {
     private int[] productions;
     private int[] buildingProductions;
 
-    public Account(String serverHostName, String login, String password) {
+    public Account(String serverHostName, String login, String password) throws LoginException {
 
         this.login = login;
         this.password = password;
@@ -49,15 +50,15 @@ public class Account {
                 tasks = loadTaskFromFile("task_" + serverHostName + "_" + login + ".txt");
 
             } catch (LoadHttpPageException e) {
-                //TODO: add exception
                 Logger.info("Can't load page");
+                throw new LoginException();
             }
 
             Logger.info("Success creation account '" + login + "', password: '" + password + "' for host '" + serverHostName + "'");
 
         } catch (UnknownHostException ex) {
-            //TODO: add exception
             Logger.info("Unknown Host '" + serverHostName + "'");
+            throw new LoginException();
         }
 
     }
@@ -69,7 +70,7 @@ public class Account {
         }
 
         if (!tasks.isEmpty() && tasks.peek().time < (int) (System.currentTimeMillis() / 1000)) {
-            //TODO: task isn't always upgrading field task
+
             Task task = tasks.peek();
             try {
 
@@ -80,6 +81,9 @@ public class Account {
                 }
             } catch (LoadHttpPageException ex) {
                 Logger.info("Can't load page");
+                return;
+            } catch (LoginException ex) {
+                Logger.info("Can't login again. Was account information change?");
                 return;
             } catch (UpgradingAvailableException ex) {
                 if (buildingProductions != null && buildingProductions.length != 0) {

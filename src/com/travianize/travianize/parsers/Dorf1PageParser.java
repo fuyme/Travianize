@@ -85,10 +85,14 @@ public class Dorf1PageParser {
         RegexpUtils.preg_match_all("/<span id=\"timer[0-9]\">(.+?)<\\/span>/", buildingProductionDiv, buildingProductionRegx);
         buildingProduction = new int[buildingProductionRegx.size()];
         for (int i = 0; i < buildingProductionRegx.size(); i++) {
-            String[] stringRemainingTimes = buildingProductionRegx.get(i).get(1).split(":");
-            int remainingTime = Integer.parseInt(stringRemainingTimes[0]) * 3600 + Integer.parseInt(stringRemainingTimes[1]) * 60 + Integer.parseInt(stringRemainingTimes[2]);
-            buildingProduction[i] = remainingTime;
-            //TODO: add try-cathce to parseInt
+            try{
+                String[] stringRemainingTimes = buildingProductionRegx.get(i).get(1).split(":");
+                int remainingTime = Integer.parseInt(stringRemainingTimes[0]) * 3600 + Integer.parseInt(stringRemainingTimes[1]) * 60 + Integer.parseInt(stringRemainingTimes[2]);
+                buildingProduction[i] = remainingTime;
+            }catch(NumberFormatException e){
+                Logger.info("Time format is wrong");
+                buildingProduction[i] = 300;
+            }
         }
 
         return buildingProduction;

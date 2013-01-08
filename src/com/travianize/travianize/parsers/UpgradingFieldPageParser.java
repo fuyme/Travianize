@@ -13,7 +13,7 @@ public class UpgradingFieldPageParser {
         List<List<String>> linkRegx = new ArrayList<List<String>>();
 
         RegexpUtils.preg_match_all("/class=\"build\" onclick=\"window\\.location\\.href = '(.+?)'; return false;\">/", html, linkRegx);
-        //TODO: add check: is elements exist
+
         if(linkRegx.size()<1 || linkRegx.get(0).size()<2){
             return null;
         }
@@ -29,7 +29,9 @@ public class UpgradingFieldPageParser {
         List<List<String>> resoursesDivRegx = new ArrayList<List<String>>();
 
         RegexpUtils.preg_match_all("/<div class=\"showCosts\">(.+?)<\\/div>/", html, resoursesDivRegx);
-        //TODO: add if
+        if(resoursesDivRegx.size()<1 || resoursesDivRegx.get(0).size()<2){
+            return null;
+        }
         String resoursesDiv = resoursesDivRegx.get(0).get(1);
 
         List<List<String>> resoursesRegx = new ArrayList<List<String>>();
@@ -43,8 +45,12 @@ public class UpgradingFieldPageParser {
         int[] resourses = new int[4];
 
         for (int i = 0; i < 4; i++) {
-            //TODO: add try-cathce
-            resourses[i] = Integer.parseInt(resoursesRegx.get(i).get(1));
+            try{
+                resourses[i] = Integer.parseInt(resoursesRegx.get(i).get(1));
+            }catch(NumberFormatException e){
+                Logger.info("Can't parse resourse amount");
+                resourses[i] = 0;
+            }
         }
 
         return resourses;
