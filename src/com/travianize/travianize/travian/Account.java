@@ -29,6 +29,7 @@ public class Account {
 
     private String login;
     private String password;
+    private String host;
 
     private int resourcesLastUpdate, productionsLastUpdate, buildingProductionsLastUpdate;
     private int[] resources;
@@ -39,6 +40,7 @@ public class Account {
 
         this.login = login;
         this.password = password;
+        this.host = serverHostName;
 
         try {
             connection = new TravianConnector(serverHostName, this);
@@ -215,5 +217,12 @@ public class Account {
      */
     public String getPassword() {
         return password;
+    }
+
+    /**
+     * @return the host
+     */
+    public String getHost() {
+        return host;
     }
 }

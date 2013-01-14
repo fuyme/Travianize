@@ -14,12 +14,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
-public class Travianize {
+public class Travianize extends Thread {
 
-    public static final String VERSION = "0.0.3";
+    public static final String VERSION = "0.0.5";
     public static final String APPLICATION_NAME = "Travianize";
     private static final String accountsInfoFileName = "accounts.conf";
+    private static final String wrongCommand = "Wrong command";
     private static Travianize travianize;
+    private boolean finish = false;
 
     private class AccountInfo {
 
@@ -35,7 +37,7 @@ public class Travianize {
 
         }
     }
-    private Account[] accounts;
+    private List<Account> accounts;
 
     private AccountInfo[] loadAccountsInfo(String accountsInfoFileName) {
 
@@ -77,11 +79,11 @@ public class Travianize {
 
                 String password = "";
 
-                for(int i=2;i<accountParts.length;i++){
-                    password+=accountParts[i] + ":";
+                for (int i = 2; i < accountParts.length; i++) {
+                    password += accountParts[i] + ":";
                 }
 
-                password = password.substring(0, password.length()-1);
+                password = password.substring(0, password.length() - 1);
 
                 AccountInfo accountInfo = new AccountInfo(accountParts[0], accountParts[1], password);
 
@@ -110,52 +112,54 @@ public class Travianize {
     public Travianize() throws LoadProgrammException {
 
         Logger.info(APPLICATION_NAME + " ver. " + VERSION);
+        accounts = new ArrayList<Account>();
+        /*
+         AccountInfo[] accountsInfo = loadAccountsInfo(accountsInfoFileName);
 
-        AccountInfo[] accountsInfo = loadAccountsInfo(accountsInfoFileName);
+         if (accountsInfo == null) {
 
-        if (accountsInfo == null) {
+         Logger.info("Fatal error in loading accounts...");
+         throw new LoadProgrammException();
 
-            Logger.info("Fatal error in loading accounts...");
-            throw new LoadProgrammException();
+         }
 
-        }
+         if (accountsInfo.length == 0) {
 
-        if (accountsInfo.length == 0) {
+         Logger.info("Can't find any accounts. Use 'host:login:password' to add new accounts");
+         throw new LoadProgrammException();
 
-            Logger.info("Can't find any accounts. Use 'host:login:password' to add new accounts");
-            throw new LoadProgrammException();
+         }
 
-        }
+         Logger.info("Loaded accounts:");
+         for (AccountInfo accountInfo : accountsInfo) {
 
-        Logger.info("Loaded accounts:");
-        for (AccountInfo accountInfo : accountsInfo) {
+         Logger.info(accountInfo.serverHostName + " " + accountInfo.login + " " + accountInfo.password);
 
-            Logger.info(accountInfo.serverHostName + " " + accountInfo.login + " " + accountInfo.password);
+         }
 
-        }
+         accounts = new Account[accountsInfo.length];
 
-        accounts = new Account[accountsInfo.length];
+         for (int i = 0; i < accountsInfo.length; i++) {
+         try {
+         accounts[i] = new Account(accountsInfo[i].serverHostName, accountsInfo[i].login, accountsInfo[i].password);
+         } catch (LoginException ex) {
+         Logger.info("Can't login as " + accountsInfo[i].login + " on server " + accountsInfo[i].serverHostName);
+         accounts[i] = null;
+         }
 
-        for (int i = 0; i < accountsInfo.length; i++) {
-            try {
-                accounts[i] = new Account(accountsInfo[i].serverHostName, accountsInfo[i].login, accountsInfo[i].password);
-            } catch (LoginException ex) {
-                Logger.info("Can't login as "+accountsInfo[i].login+" on server "+accountsInfo[i].serverHostName);
-                accounts[i] = null;
-            }
-
-        }
-
+         }
+         */
     }
 
-    public void start() {
+    @Override
+    public void run() {
 
         int updatedAccount = 0;
 
         do {
             updatedAccount = 0;
             for (Account account : accounts) {
-                if(account != null){
+                if (account != null) {
                     if (!account.isComplite()) {
                         account.update();
                         updatedAccount++;
@@ -167,18 +171,107 @@ public class Travianize {
                 Thread.sleep(100);
             } catch (InterruptedException ex) {
             }
-        } while (updatedAccount != 0);
-
+        } while (updatedAccount != 0 && !finish);
 
     }
 
-    public static void main(String[] args) {
+    public void finish() {
+
+        finish = true;
+
+    }
+
+    public String accountCommand(String[] commands) {
+
+        if (commands.length < 2) {
+            return wrongCommand;
+        }
+
+        if (commands[1].equals("add")) {
+            if (commands.length < 5) {
+                return wrongCommand;
+            }
+            try {
+                Account account = new Account(commands[2], commands[3], commands[4]);
+                return "Success adding account";
+            } catch (LoginException ex) {
+                return "Wrong account's data";
+            }
+
+        } else if (commands[1].equals("delete")) {
+            if (commands.length < 5) {
+                return wrongCommand;
+            }
+
+            for (Account account : accounts) {
+                if (account.getHost().equals(commands[2]) && account.getLogin().equals(commands[3]) && account.getPassword().equals(commands[4])) {
+                    accounts.remove(account);
+                    return "Success deleting account";
+                }
+            }
+
+            return wrongCommand;
+
+        } else {
+            return wrongCommand;
+        }
+
+    }
+
+    public String command(String command) {
+
+        String result;
+
+        command = command.trim();
+
+        while (command.indexOf("  ") != -1) {
+            command = command.replaceAll("  ", " ");
+        }
+
+        if (command.isEmpty() || command.equals(" ")) {
+            return wrongCommand;
+        }
+
+        String[] parts = command.split(" ");
+
+        if (parts.length < 1) {
+            return wrongCommand;
+        }
+
+        if (parts[0].equals("account")) {
+            result = accountCommand(parts);
+        } else if (parts[0].equals("quit")) {
+            result = "Goodbye!";
+        } else {
+            result = wrongCommand;
+        }
+
+        return result;
+
+    }
+
+    public static void main(String[] args) throws IOException, InterruptedException {
         try {
+
             travianize = new Travianize();
             travianize.start();
+
         } catch (LoadProgrammException ex) {
             Logger.info("Fatal error in loading...");
         }
+
+        String command;
+        BufferedReader keyboardBufferReader = new BufferedReader(new InputStreamReader(System.in));
+
+        do {
+            command = keyboardBufferReader.readLine();
+            String result = travianize.command(command);
+            System.out.println(result);
+        } while (!command.equals("quit"));
+
+        travianize.finish();
+        travianize.join();
+
 
     }
 }
