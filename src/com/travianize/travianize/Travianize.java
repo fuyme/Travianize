@@ -23,6 +23,8 @@ public class Travianize extends Thread {
     private static Travianize travianize;
     private boolean finish = false;
 
+    private Account currentAccount = null;
+
     private class AccountInfo {
 
         public final String login;
@@ -193,26 +195,41 @@ public class Travianize extends Thread {
             }
             try {
                 Account account = new Account(commands[2], commands[3], commands[4]);
+                accounts.add(account);
                 return "Success adding account";
             } catch (LoginException ex) {
                 return "Wrong account's data";
             }
 
         } else if (commands[1].equals("delete")) {
-            if (commands.length < 5) {
+            if (commands.length < 4) {
                 return wrongCommand;
             }
 
             for (Account account : accounts) {
-                if (account.getHost().equals(commands[2]) && account.getLogin().equals(commands[3]) && account.getPassword().equals(commands[4])) {
+                if (account.getHost().equals(commands[2]) && account.getLogin().equals(commands[3])) {
                     accounts.remove(account);
                     return "Success deleting account";
                 }
             }
 
-            return wrongCommand;
+            return "Cant find account";
 
-        } else {
+        } else if (commands[1].equals("switch")) {
+            if (commands.length < 4) {
+                return wrongCommand;
+            }
+
+            for (Account account : accounts) {
+                if (account.getHost().equals(commands[2]) && account.getLogin().equals(commands[3])) {
+                    currentAccount = account;
+                    return "Success switching account";
+                }
+            }
+
+            return "Cant find account";
+
+        }else{
             return wrongCommand;
         }
 
