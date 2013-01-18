@@ -1,5 +1,6 @@
 package com.travianize.travianize.travian;
 
+import com.travianize.travianize.Travianize;
 import com.travianize.travianize.connection.TravianConnector;
 import com.travianize.travianize.exception.LoadHttpPageException;
 import com.travianize.travianize.exception.LoginException;
@@ -23,14 +24,10 @@ import java.util.Queue;
 public class Account {
 
     TravianConnector connection;
-
     Queue<Task> tasks = new LinkedList<Task>();
-    private boolean complite = false;
-
     private String login;
     private String password;
     private String host;
-
     private int resourcesLastUpdate, productionsLastUpdate, buildingProductionsLastUpdate;
     private int[] resources;
     private int[] productions;
@@ -48,13 +45,14 @@ public class Account {
             try {
                 Logger.info("Try login...");
                 connection.login(login, password);
-                Logger.info("Load tasks from file 'task_" + serverHostName + "_" + login + ".txt'");
-                tasks = loadTaskFromFile("task_" + serverHostName + "_" + login + ".txt");
+               // Logger.info("Load tasks from file 'task_" + serverHostName + "_" + login + ".txt'");
+               // tasks = loadTaskFromFile("task_" + serverHostName + "_" + login + ".txt");
 
             } catch (LoadHttpPageException e) {
                 Logger.info("Can't load page");
                 throw new LoginException();
             }
+
 
             Logger.info("Success creation account '" + login + "', password: '" + password + "' for host '" + serverHostName + "'");
 
@@ -66,10 +64,6 @@ public class Account {
     }
 
     public void update() {
-
-        if (tasks.isEmpty()) {
-            complite = true;
-        }
 
         if (!tasks.isEmpty() && tasks.peek().time < (int) (System.currentTimeMillis() / 1000)) {
 
@@ -183,10 +177,6 @@ public class Account {
 
     }
 
-    public boolean isComplite() {
-        return complite;
-    }
-
     public void updateFromDorf1Page(Dorf1Page page) {
 
         if (page.resources != null) {
@@ -203,6 +193,26 @@ public class Account {
             this.buildingProductions = page.buildingProductions;
             this.buildingProductionsLastUpdate = (int) (System.currentTimeMillis() / 1000);
         }
+    }
+
+    public String command(String[] commands) {
+
+        if (commands.length < 2) {
+            return Travianize.wrongCommand;
+        }
+
+        try {
+            int id = Integer.parseInt(commands[1]);
+            UpgradingFieldTask task = new UpgradingFieldTask();
+            task.idField = id;
+            task.time = 0;
+            tasks.add(task);
+        } catch (NumberFormatException e) {
+            return Travianize.wrongCommand;
+        }
+
+        return "Add";
+
     }
 
     /**

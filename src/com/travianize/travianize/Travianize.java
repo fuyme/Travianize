@@ -19,10 +19,9 @@ public class Travianize extends Thread {
     public static final String VERSION = "0.0.5";
     public static final String APPLICATION_NAME = "Travianize";
     private static final String accountsInfoFileName = "accounts.conf";
-    private static final String wrongCommand = "Wrong command";
+    public static final String wrongCommand = "Wrong command";
     private static Travianize travianize;
     private boolean finish = false;
-
     private Account currentAccount = null;
 
     private class AccountInfo {
@@ -159,13 +158,14 @@ public class Travianize extends Thread {
         int updatedAccount = 0;
 
         do {
+
             updatedAccount = 0;
             for (Account account : accounts) {
                 if (account != null) {
-                    if (!account.isComplite()) {
-                        account.update();
-                        updatedAccount++;
-                    }
+
+                    account.update();
+                    updatedAccount++;
+
                 }
 
             }
@@ -173,7 +173,7 @@ public class Travianize extends Thread {
                 Thread.sleep(100);
             } catch (InterruptedException ex) {
             }
-        } while (updatedAccount != 0 && !finish);
+        } while (!finish);
 
     }
 
@@ -229,7 +229,7 @@ public class Travianize extends Thread {
 
             return "Cant find account";
 
-        }else{
+        } else {
             return wrongCommand;
         }
 
@@ -239,7 +239,7 @@ public class Travianize extends Thread {
 
         String result;
 
-        command = command.trim();
+        command = command.trim().replace('\t', ' ');
 
         while (command.indexOf("  ") != -1) {
             command = command.replaceAll("  ", " ");
@@ -257,6 +257,8 @@ public class Travianize extends Thread {
 
         if (parts[0].equals("account")) {
             result = accountCommand(parts);
+        } else if (parts[0].equals("build")) {
+            result = currentAccount.command(parts);
         } else if (parts[0].equals("quit")) {
             result = "Goodbye!";
         } else {
